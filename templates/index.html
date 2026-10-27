@@ -126,7 +126,8 @@ if(!SERVER_READY)return;
 const a=document.getElementById("app"),nav=document.getElementById("nav");
 if(!S.profile||!S.profile.complete){nav.style.display='none';a.innerHTML=profileForm();return}
 nav.style.display='flex';nav.innerHTML=TABS.map(t=>`<button class="${S.tab===t[0]?"on":""}" onclick="go('${t[0]}')"><b>${t[1]}</b>${t[2]}</button>`).join("")+`<button onclick="logout()">로그아웃</button>`;
-a.innerHTML=({home,caffeine,study,cal,exam,fame,sos})[S.tab]();if(S.tab==='sos'&&SS&&SS.st===3)sosR()}
+a.innerHTML=({home,caffeine,study,cal,exam,fame,sos})[S.tab]();
+if(S.tab==='fame')loadLeaderboard();if(S.tab==='sos'&&SS&&SS.st===3)sosR()}
 function go(t){S.tab=t;save();render();window.scrollTo(0,0)}
 function home(){return caffeine()}
 function profileForm(){const p=S.profile||{};return `<h1>식품타 시작 설정</h1><div class="card hero"><h2>먼저 내 프로필을 만들어요</h2><div class="sub">프로필을 저장하면 공부 타이머가 먼저 열리고, 카페인 관리는 별도 탭에서 이용할 수 있어요.</div></div><form onsubmit="saveProfile(event)"><div class="card"><label>이름</label><input id="pfName" required maxlength="40" placeholder="이름" value="${escapeHTML(p.name||'')}"><label>성별</label><select id="pfGender" onchange="togglePregnancyField(this.value)"><option value="미선택" ${p.gender==='미선택'?'selected':''}>선택 안 함</option><option value="여성" ${p.gender==='여성'?'selected':''}>여성</option><option value="남성" ${p.gender==='남성'?'selected':''}>남성</option><option value="기타" ${p.gender==='기타'?'selected':''}>기타 / 직접 답하지 않음</option></select><label>나이</label><input id="pfAge" type="number" required min="1" max="120" value="${escapeHTML(p.age||'') }" placeholder="만 나이"><label>체중 (kg)</label><input id="pfWeight" type="number" required min="1" max="350" step="0.1" value="${Number(p.weight||S.kg||60)}">${`<div id="pregnancyField" style="${p.gender==='남성'?'display:none':''}"><label>현재 임신 중인가요?</label><select id="pfPreg"><option value="no" ${p.pregnant!=='yes'?'selected':''}>아니요</option><option value="yes" ${p.pregnant==='yes'?'selected':''}>예</option><option value="skip" ${p.pregnant==='skip'?'selected':''}>답하고 싶지 않아요</option></select></div>`}<label>평소 취침 시각</label><input id="pfBed" type="time" value="${S.bed||'23:30'}"><label>카페인 반감기 추정값: ${S.hl||5.5}시간</label><input id="pfHl" type="range" min="2" max="12" step="0.5" value="${S.hl||5.5}" oninput="document.getElementById('pfHlLabel').textContent=this.value+'시간'"><div id="pfHlLabel" class="sub">${S.hl||5.5}시간</div><div class="sub">반감기는 섭취한 카페인이 절반으로 줄어드는 데 걸리는 추정 시간이에요. 기본값 5.5시간이며 개인차가 커서 실제 잔량과 다를 수 있어요.</div><button class="btn" type="submit" style="width:100%;margin-top:14px">프로필 저장하고 타이머 시작</button><div class="sub" style="margin-top:8px">성별은 프로필 표시용으로 저장돼요. 이 앱의 기준 계산은 나이, 체중, 임신 여부를 사용하며 의료적 판단을 대신하지 않아요.</div></div></form>`}
@@ -290,11 +291,60 @@ function dayStat(i){const d0=today()-i*864e5,d1=d0+864e5,cut=cutMin(),L=S.logs.f
 if(![...S.logs,...S.focus,...S.meals,...S.study].some(x=>x.t>=d0&&x.t<d1))return 0;
 return (L.some(l=>(l.t-d0)/6e4>cut)?0:10)+(L.reduce((a,l)=>a+l.mg,0)>lim()?0:5)+(S.meals.some(m=>m.t>=d0&&m.t<d1)?5:0)}
 function myScore(){let h=0,m=0;for(let i=0;i<7;i++){h+=dayStat(i);const d0=today()-i*864e5;m+=S.study.filter(s=>s.t>=d0&&s.t<d0+864e5).reduce((a,s)=>a+s.m,0)}return{h:h+Math.min(30,S.gw*3),s:Math.min(120,Math.round(m/5))}}
-function fame(){const s=myScore(),me=s.h+s.s;
-const R=[['하늘 (예시)',118],['지우 (예시)',96],['도윤 (예시)',74],['서연 (예시)',52],['나',me]].sort((a,b)=>b[1]-a[1]),first=R[0][0]==='나';
-return `<h1>🏆 명예의 전당</h1><div class='card hero'><div class='sub'>이번 주 1등 보상</div><div style='font-size:1.3rem;font-weight:800'>🎁 건강식품 기프티콘</div><div class='sub'>${first?'지금 내가 1등이에요! 🎉':'1등과 '+(R[0][1]-me)+'점 차이예요.'}</div></div>
-<div class='card'><h2>이번 주 순위 (최근 7일)</h2>${R.map((r,i)=>`<div class='rk ${r[0]==='나'?'me':''}'><span>${i+1}. ${r[0]}</span><span>${r[1]}점</span></div>`).join('')}</div>
-<div class='card'><h2>내 점수 = ${me}점</h2><div class='li'><span>🍽 식습관 점수</span><span>${s.h}</span></div><div class='li'><span>📚 공부 점수</span><span>${s.s}</span></div><div class='sub' style='margin-top:8px'>식습관: 하루마다 카페인 마감 지키기 +10, 하루 한도 지키기 +5, 식사 기록 +5 (최대 140). 공부: 5분당 1점 (최대 120). 식습관을 잘 지켜야 이기도록 만들었어요.</div><div class='warn'>친구 점수는 예시 데이터예요. 실제 반 순위와 기프티콘 지급은 서버와 운영이 필요해요.</div></div>`}
+function fame(){function fame(){
+  const s=myScore(),me=s.h+s.s;
+  return `<h1>🏆 명예의 전당</h1>
+  <div class="card hero">
+    <div class="sub">이번 주 1등 보상</div>
+    <div style="font-size:1.3rem;font-weight:800">🎁 건강식품 기프티콘</div>
+    <div class="sub" id="leaderboardMessage">실제 가입자 순위를 불러오는 중…</div>
+  </div>
+  <div class="card">
+    <h2>이번 주 순위 (최근 7일)</h2>
+    <div id="leaderboardList">순위를 불러오는 중…</div>
+  </div>
+  <div class="card">
+    <h2>내 점수 = ${me}점</h2>
+    <div class="li"><span>🍽 식습관 점수</span><span>${s.h}</span></div>
+    <div class="li"><span>📚 공부 점수</span><span>${s.s}</span></div>
+    <div class="sub" style="margin-top:8px">
+      식습관: 카페인 마감, 하루 한도, 식사 기록을 기준으로 계산해요.
+      공부: 5분당 1점이며 최대 120점이에요.
+    </div>
+  </div>`;
+}
+                
+async function loadLeaderboard(){
+  const list=document.getElementById('leaderboardList');
+  if(!list)return;
+
+  try{
+    const r=await fetch('/api/leaderboard',{credentials:'same-origin'});
+    if(!r.ok)throw new Error('순위를 불러오지 못했어요.');
+
+    const d=await r.json();
+    const rows=d.rankings||[];
+    const me=rows.find(x=>x.is_me);
+    const first=rows[0];
+
+    list.innerHTML=rows.length?rows.map((x,i)=>
+      `<div class="rk ${x.is_me?'me':''}">
+        <span>${i+1}. ${escapeHTML(x.name)}${x.is_me?' (나)':''}</span>
+        <span>${x.score}점</span>
+      </div>`
+    ).join(''):'아직 순위 데이터가 없어요.';
+
+    const msg=document.getElementById('leaderboardMessage');
+    if(msg){
+      msg.textContent=me&&first
+        ?(first.is_me?'지금 내가 1등이에요!':`1등과 ${Math.max(0,first.score-me.score)}점 차이예요.`)
+        :'아직 점수 데이터가 없어요.';
+    }
+  }catch(e){
+    list.textContent='순위를 불러오지 못했어요. 서버 배포 상태를 확인해 주세요.';
+  }
+}
+
 
 FD.push(...S.cf.map(c=>[c.n,c.carb,c.buf]));
 let CFR='',G=null,SS=null;
