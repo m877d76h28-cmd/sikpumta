@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>식품타 | 공부 타이머</title>
+<style>
+:root{--bg:#f2f8f3;--card:#ffffff;--tx:#183526;--sub:#64786a;--ac:#17834b;--ac2:#e3f3e8;--bd:#d5e7d9;--r:#d94343;--y:#dfa51c;--g:#1b9a5a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111d15;--card:#1b2a20;--tx:#eaf5ec;--sub:#a5b9a9;--ac:#63d58c;--ac2:#243d2c;--bd:#344b39;--r:#ff7a72;--y:#f2bf4a;--g:#63d58c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111d15;--card:#1b2a20;--tx:#eaf5ec;--sub:#a5b9a9;--ac:#63d58c;--ac2:#243d2c;--bd:#344b39;--r:#ff7a72;--y:#f2bf4a;--g:#63d58c;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.5}
+main{max-width:520px;margin:0 auto;padding:14px 14px 96px}
+h1{font-size:1.25rem;margin:4px 0 12px;display:flex;justify-content:space-between;align-items:center}
+h2{font-size:.98rem;margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px}
+.sub{color:var(--sub);font-size:.8rem}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{background:var(--ac);color:var(--bg);border:0;border-radius:10px;padding:10px 14px;font-weight:700}
+.chip{background:var(--ac2);border:1px solid var(--bd);border-radius:20px;padding:7px 12px;margin:3px 3px 0 0;font-size:.85rem}
+.chip.on{background:var(--ac);color:var(--bg);border-color:var(--ac)}
+input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;width:100%}
+label{display:block;font-size:.8rem;color:var(--sub);margin:8px 0 3px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;border:0;padding:6px 0;font-size:.7rem;color:var(--sub)}
+nav button b{display:block;font-size:1.3rem;font-weight:400}
+nav button.on{color:var(--ac);font-weight:700}
+.bar{height:14px;border-radius:8px;background:var(--ac2);overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--g);border-radius:8px;transition:width .4s}
+.emo{display:flex;justify-content:space-between}
+.emo button{font-size:1.9rem;background:var(--ac2);border:1px solid var(--bd);border-radius:14px;width:18%;padding:6px 0}
+.big{font-size:1.8rem;font-weight:800;color:var(--ac)}
+.light{display:flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:700}
+.dot{width:22px;height:22px;border-radius:50%}
+.warn{background:#fff4e0;color:#5a4118;border:1px solid #f0d9a8;border-radius:10px;padding:8px 10px;font-size:.82rem;margin-top:8px}
+@media(prefers-color-scheme:dark){.warn{background:#33291a;color:#f0dcb0;border-color:#5a4724}}
+.li{display:flex;justify-content:space-between;font-size:.88rem;padding:5px 0;border-bottom:1px solid var(--bd)}
+.between{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.timer-face{font-size:2.6rem;font-weight:800;letter-spacing:.02em;text-align:center;color:var(--ac);font-variant-numeric:tabular-nums}
+.drink-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.drink-btn{background:var(--ac2);border:1px solid var(--bd);border-radius:13px;padding:10px;text-align:left}.drink-btn b{display:block;font-size:.92rem}.drink-btn small{color:var(--sub)}
+body{background:radial-gradient(circle at 15% -10%,rgba(43,153,83,.12),transparent 55%),var(--bg)}
+.card{box-shadow:0 6px 22px rgba(25,85,45,.07);border-radius:20px;transition:border-color .18s,box-shadow .18s}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid rgba(23,131,75,.35);outline-offset:2px}
+button:active{transform:translateY(1px)}
+.hero{background:linear-gradient(135deg,#17834b,#35a866);color:#fff;border:0}.hero .sub,.hero .big{color:#fff}
+.chip{border-radius:22px}nav button{font-size:.62rem}nav button b{font-size:1.2rem}
+.clk{font-size:3.4rem;text-align:center;margin:8px 0}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.day{background:var(--ac2);border:1px solid var(--bd);border-radius:10px;padding:5px 0;font-size:.85rem}
+.day small{display:block;font-size:.58rem;color:var(--sub);min-height:.9em}
+.day.td{border-color:var(--ac)}.day.dd{background:var(--r);color:#fff}.day.dd small{color:#fff}.day.sel{outline:2px solid var(--ac)}
+.timer-ring{--progress:100%;width:min(72vw,260px);height:min(72vw,260px);border-radius:50%;margin:14px auto;display:grid;place-items:center;background:conic-gradient(var(--ac) var(--progress),var(--ac2) 0);position:relative}.timer-ring:before{content:'';position:absolute;inset:12px;border-radius:50%;background:var(--card)}.timer-ring>div{position:relative;text-align:center}.timer-number{font-size:clamp(2.6rem,12vw,3.6rem);font-weight:850;letter-spacing:.025em;text-align:center;font-variant-numeric:tabular-nums;color:var(--tx);line-height:1.2}.digital-timer{background:var(--ac2);border-radius:18px;padding:28px 10px;text-align:center;margin-top:10px}.digital-timer .timer-number{font-size:clamp(3rem,14vw,4.4rem);color:var(--ac)}.minimal-timer{padding:18px 4px}.minimal-timer .timer-number{font-size:clamp(3.2rem,15vw,4.8rem);letter-spacing:.08em;margin:12px 0}.timer-presets{display:flex;flex-wrap:wrap;gap:5px}.day.examrange{background:#cbeed5;border-color:#8ccda0;color:#17492b}.day.examedge{background:var(--ac);color:white;border-color:var(--ac)}.day.examedge small{color:white}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.fc{border-radius:20px;padding:16px 8px;text-align:center;color:#2a2a2a;font-weight:700}.fc b{display:block;font-size:2.8rem}.fc span{font-size:.72rem;display:block;font-weight:400}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:9}
+#ov>div{background:var(--card);border-radius:24px 24px 0 0;padding:18px;width:100%;max-width:520px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+.rk{display:flex;justify-content:space-between;padding:9px 10px;border-radius:12px;margin-bottom:6px;background:var(--ac2)}.rk.me{outline:2px solid var(--ac);font-weight:700}
+.sosbg{background:linear-gradient(135deg,#c0392b,#e67e22);color:#fff;border:0;animation:pl 1.5s infinite}@keyframes pl{0%,100%{box-shadow:0 0 0 0 rgba(230,60,40,.5)}50%{box-shadow:0 0 18px 6px rgba(230,60,40,.45)}}
+nav{overflow-x:auto}nav button{flex:0 0 auto;min-width:54px}.mon{font-size:4rem;text-align:center}details summary{cursor:pointer}
+</style>
+</head>
+<body>
+<section id="authGate" style="max-width:520px;margin:8vh auto;padding:20px;display:none">
+  <div class="card hero"><h1>식품타</h1><h2>내 공부 기록을 안전하게 저장해요</h2><div class="sub">계정을 만들거나 로그인하면 시험 기간, 공부 기록, 카페인 기록을 계정에 저장할 수 있어요.</div></div>
+  <div class="card">
+    <div class="row"><button class="chip" id="loginMode" type="button" onclick="setAuthMode('login')">로그인</button><button class="chip" id="registerMode" type="button" onclick="setAuthMode('register')">회원가입</button></div>
+    <form id="authForm" onsubmit="submitAuth(event)">
+      <label>이메일</label><input id="authEmail" type="email" required maxlength="254" autocomplete="username" placeholder="you@example.com">
+      <label>비밀번호</label><input id="authPassword" type="password" required minlength="8" maxlength="128" autocomplete="current-password" placeholder="8자 이상">
+      <div id="authError" class="warn" style="display:none;margin-top:10px"></div>
+      <button class="btn" id="authSubmit" type="submit" style="width:100%;margin-top:14px">로그인</button>
+    </form>
+    <div class="sub" style="margin-top:12px">개인 기록은 로그인한 계정에 연결됩니다. 다른 사람과 비밀번호를 공유하지 마세요.</div>
+  </div>
+</section>
+<div id="appShell" style="display:none"><main id="app"></main>
+<nav id="nav"></nav></div>
+<script>
+const TABS=[['study','⏱','공부 타이머'],['home','☕','카페인 보조'],['cal','📅','일정'],['exam','📝','시험 기간'],['fame','🏆','명예']];
+const DR=[["아메리카노",130],["에너지드링크",100],["에스프레소",65],["녹차",30],["콜라",34],["캔커피",60]];
+// 음식: [이름, 정제 탄수 점수(0-3), 단백질·지방·섬유 완충(0-2)]
+const FD=[["삼각김밥",2,0],["초코바",3,0],["우유",1,1],["삶은 달걀",0,2],["바나나",2,1],["견과류",0,2],["요거트",1,1],["라면",3,0],["샌드위치",2,1],["단백질바",1,2],["과일주스",3,0],["두유",1,1]];
+const SOS={
+"더부룩":{eat:["미지근한 물 조금씩","따뜻한 매실차나 생강차","소화가 쉬운 죽"],avoid:["탄산음료","기름진 음식","급하게 먹기"],why:"차가운 음료는 위 운동을 둔하게 할 수 있고, 미지근한 수분은 위 부담을 줄여줘요."},
+"속쓰림":{eat:["미지근한 물","바나나","부드러운 흰죽"],avoid:["커피·에너지드링크","맵고 신 음식","탄산"],why:"카페인과 산성 음식은 위산 분비를 자극해서 속쓰림을 키울 수 있어요."},
+"설사":{eat:["물·묽은 이온음료(수분 보충)","흰죽","바나나"],avoid:["우유·유제품","카페인","찬 음식"],why:"설사 때는 수분과 전해질이 빠져나가요. 부드럽고 자극 적은 음식으로 장을 쉬게 해요."},
+"변비":{eat:["물 충분히","키위","귀리·고구마"],avoid:["과자·라면 위주 식사","수분 부족"],why:"식이섬유는 물을 머금고 변 부피를 늘려서 장 운동을 도와요."},
+"메스꺼움":{eat:["미지근한 물 한두 모금","크래커","생강차"],avoid:["기름진 음식","강한 냄새 음식","커피"],why:"빈속이나 기름진 음식은 메스꺼움을 키워요. 소량의 마른 탄수화물이 도움이 될 수 있어요."}};
+let S={tab:"study",kg:60,bed:"23:30",hl:5.5,ageBand:'teen',profile:{complete:false,name:'',gender:'미선택',age:'',weight:60,pregnant:'no'},items:[],logs:[],focus:[],meals:[],study:[],tm:null,exp:null,sym:"더부룩",pick:[],exam:"08:40",examRange:{start:null,end:null},timerStyle:'ring',subj:['국어','수학','영어'],sel:'국어',todos:[],dd:null,chk:15,menu:'',cf:[],gw:0};
+let AUTH_MODE='login', SERVER_READY=false, SERVER_SAVE_TIMER=null, SERVER_SAVE_CHAIN=Promise.resolve();
+let LOCAL_STATE_BACKUP=null;
+try{LOCAL_STATE_BACKUP=JSON.parse(localStorage.getItem('sst')||'null');if(LOCAL_STATE_BACKUP)Object.assign(S,LOCAL_STATE_BACKUP)}catch(e){}
+if(!S.profile)S.profile={complete:false,name:'',gender:'미선택',age:'',weight:S.kg||60,pregnant:'no'};if(S.profile.gender==='남성')S.profile.pregnant='no';if(!Array.isArray(S.items))S.items=[];if(!S.profile.complete)S.profile.complete=false;
+if(['food','lab','caffeine','sos','home'].includes(S.tab) && !S._visitedPrimaryStudy){S.tab='study';S._visitedPrimaryStudy=true;}if(!S.examRange)S.examRange={start:null,end:null};try{const savedRange=JSON.parse(localStorage.getItem('sst_examRange')||'null');if(savedRange&&typeof savedRange==='object')S.examRange={start:savedRange.start||null,end:savedRange.end||null}}catch(e){}if(typeof S.examRangeEditing!=='boolean')S.examRangeEditing=!(S.examRange.start&&S.examRange.end);if(!S.timerStyle)S.timerStyle='ring';
+function save(){
+  try{localStorage.setItem('sst',JSON.stringify(S));localStorage.setItem('sst_examRange',JSON.stringify(S.examRange||{start:null,end:null}))}catch(e){console.error('로컬 임시 저장 실패:',e)}
+  if(SERVER_READY){clearTimeout(SERVER_SAVE_TIMER);SERVER_SAVE_TIMER=setTimeout(()=>persistServerState(),250)}
+}
+async function persistServerState(){
+  clearTimeout(SERVER_SAVE_TIMER);
+  const snapshot=JSON.stringify(S);
+  SERVER_SAVE_CHAIN=SERVER_SAVE_CHAIN.then(async()=>{const r=await fetch('/api/state',{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:snapshot});if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||'서버 저장에 실패했어요.')}await r.json().catch(()=>({}));showSaveStatus('서버에 저장됨');return true}).catch(e=>{console.error(e);showSaveStatus('서버 저장 실패: '+e.message,true);return false});
+  return SERVER_SAVE_CHAIN;
+}
+function showSaveStatus(message,isError=false){let el=document.getElementById('serverStatus');if(!el){el=document.createElement('div');el.id='serverStatus';el.style.cssText='position:fixed;bottom:76px;left:12px;right:12px;z-index:9999;text-align:center;padding:8px;border-radius:10px;background:var(--card);border:1px solid var(--bd);font-size:13px';document.body.appendChild(el)}el.textContent=message;el.style.color=isError?'#c0392b':'var(--tx)';if(!isError)setTimeout(()=>el.remove(),2200)}
+function setAuthMode(mode){AUTH_MODE=mode;document.getElementById('authError').style.display='none';document.getElementById('authSubmit').textContent=mode==='login'?'로그인':'회원가입';document.getElementById('authPassword').autocomplete=mode==='login'?'current-password':'new-password';document.getElementById('loginMode').classList.toggle('on',mode==='login');document.getElementById('registerMode').classList.toggle('on',mode==='register')}
+function showAuthError(msg){const el=document.getElementById('authError');el.textContent=msg;el.style.display='block'}
+async function submitAuth(e){e.preventDefault();const email=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;const b=document.getElementById('authSubmit');b.disabled=true;b.textContent='처리 중…';try{const r=await fetch(AUTH_MODE==='login'?'/api/login':'/api/register',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)throw new Error(d.error||'요청을 처리하지 못했어요.');await startAuthenticatedSession(d.is_new===true)}catch(err){showAuthError(err.message)}finally{b.disabled=false;b.textContent=AUTH_MODE==='login'?'로그인':'회원가입'}}
+async function startAuthenticatedSession(isNew){document.getElementById('authGate').style.display='none';document.getElementById('appShell').style.display='block';try{const r=await fetch('/api/state',{credentials:'same-origin'});if(!r.ok)throw new Error('저장된 데이터를 불러오지 못했어요.');const d=await r.json();if(d.state&&typeof d.state==='object'){Object.assign(S,d.state)}else if(isNew&&LOCAL_STATE_BACKUP&&typeof LOCAL_STATE_BACKUP==='object'){Object.assign(S,LOCAL_STATE_BACKUP);SERVER_READY=true;await persistServerState()}SERVER_READY=true;if(!S.examRange)S.examRange={start:null,end:null};try{const er=JSON.parse(localStorage.getItem('sst_examRange')||'null');if(!d.state&&er)S.examRange=er}catch(e){}if(typeof S.examRangeEditing!=='boolean')S.examRangeEditing=!(S.examRange.start&&S.examRange.end);render();showSaveStatus('로그인 완료 · 서버 동기화됨')}catch(err){document.getElementById('appShell').style.display='none';document.getElementById('authGate').style.display='block';showAuthError(err.message)}}
+async function boot(){document.getElementById('authGate').style.display='block';setAuthMode('login');try{const r=await fetch('/api/me',{credentials:'same-origin'});const d=await r.json();if(d.authenticated){await startAuthenticatedSession(false)}}catch(e){showAuthError('서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.')}}
+async function logout(){if(!confirm('로그아웃할까요?'))return;try{if(SERVER_READY){const saved=await persistServerState();if(!saved){alert('저장되지 않은 변경 사항이 있을 수 있어 로그아웃을 취소했어요. 다시 시도해 주세요.');return}}await fetch('/api/logout',{method:'POST',credentials:'same-origin'});SERVER_READY=false;document.getElementById('appShell').style.display='none';document.getElementById('authGate').style.display='block';setAuthMode('login')}catch(e){alert('로그아웃에 실패했어요.')}}
+const $=(h)=>h;const now=()=>Date.now();
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d.getTime()};
+const mgNow=()=>S.logs.reduce((a,l)=>a+l.mg*Math.pow(.5,(now()-l.t)/36e5/S.hl),0);
+const mgDay=()=>S.logs.filter(l=>l.t>=today()).reduce((a,l)=>a+l.mg,0);
+const lim=()=>{const p=S.profile||{};if(p.pregnant==='yes')return 300;const age=Number(p.age)||0;return age>=19?400:Math.min(150,Math.round((Number(p.weight)||S.kg||60)*2.5))};
+const hm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
+const tm=v=>{const p=v.split(":");return +p[0]*60+ +p[1]};
+function score(names){let c=0,b=0;names.forEach(n=>{const f=FD.find(x=>x[0]===n);c+=f[1];b+=f[2]});return Math.max(0,Math.min(3,c-b))}
+const LV=[["#2e9e5b","낮음 · 오후에도 비교적 안정"],["#e9a825","보통 · 졸릴 수 있어요"],["#e5534b","높음 · 식후 졸림 주의"],["#e5534b","매우 높음 · 단 것만 먹는 조합"]];
+function render(){
+if(!SERVER_READY)return;
+const a=document.getElementById("app"),nav=document.getElementById("nav");
+if(!S.profile||!S.profile.complete){nav.style.display='none';a.innerHTML=profileForm();return}
+nav.style.display='flex';nav.innerHTML=TABS.map(t=>`<button class="${S.tab===t[0]?"on":""}" onclick="go('${t[0]}')"><b>${t[1]}</b>${t[2]}</button>`).join("")+`<button onclick="logout()">로그아웃</button>`;
+a.innerHTML=({home,caffeine,study,cal,exam,fame,sos})[S.tab]();if(S.tab==='sos'&&SS&&SS.st===3)sosR()}
+function go(t){S.tab=t;save();render();window.scrollTo(0,0)}
+function home(){return caffeine()}
+function profileForm(){const p=S.profile||{};return `<h1>식품타 시작 설정</h1><div class="card hero"><h2>먼저 내 프로필을 만들어요</h2><div class="sub">프로필을 저장하면 공부 타이머가 먼저 열리고, 카페인 관리는 별도 탭에서 이용할 수 있어요.</div></div><form onsubmit="saveProfile(event)"><div class="card"><label>이름</label><input id="pfName" required maxlength="40" placeholder="이름" value="${escapeHTML(p.name||'')}"><label>성별</label><select id="pfGender" onchange="togglePregnancyField(this.value)"><option value="미선택" ${p.gender==='미선택'?'selected':''}>선택 안 함</option><option value="여성" ${p.gender==='여성'?'selected':''}>여성</option><option value="남성" ${p.gender==='남성'?'selected':''}>남성</option><option value="기타" ${p.gender==='기타'?'selected':''}>기타 / 직접 답하지 않음</option></select><label>나이</label><input id="pfAge" type="number" required min="1" max="120" value="${escapeHTML(p.age||'') }" placeholder="만 나이"><label>체중 (kg)</label><input id="pfWeight" type="number" required min="1" max="350" step="0.1" value="${Number(p.weight||S.kg||60)}">${`<div id="pregnancyField" style="${p.gender==='남성'?'display:none':''}"><label>현재 임신 중인가요?</label><select id="pfPreg"><option value="no" ${p.pregnant!=='yes'?'selected':''}>아니요</option><option value="yes" ${p.pregnant==='yes'?'selected':''}>예</option><option value="skip" ${p.pregnant==='skip'?'selected':''}>답하고 싶지 않아요</option></select></div>`}<label>평소 취침 시각</label><input id="pfBed" type="time" value="${S.bed||'23:30'}"><label>카페인 반감기 추정값: ${S.hl||5.5}시간</label><input id="pfHl" type="range" min="2" max="12" step="0.5" value="${S.hl||5.5}" oninput="document.getElementById('pfHlLabel').textContent=this.value+'시간'"><div id="pfHlLabel" class="sub">${S.hl||5.5}시간</div><div class="sub">반감기는 섭취한 카페인이 절반으로 줄어드는 데 걸리는 추정 시간이에요. 기본값 5.5시간이며 개인차가 커서 실제 잔량과 다를 수 있어요.</div><button class="btn" type="submit" style="width:100%;margin-top:14px">프로필 저장하고 타이머 시작</button><div class="sub" style="margin-top:8px">성별은 프로필 표시용으로 저장돼요. 이 앱의 기준 계산은 나이, 체중, 임신 여부를 사용하며 의료적 판단을 대신하지 않아요.</div></div></form>`}
+function togglePregnancyField(gender){const el=document.getElementById('pregnancyField');if(el)el.style.display=gender==='남성'?'none':'';const preg=document.getElementById('pfPreg');if(gender==='남성'&&preg)preg.value='no'}
+function saveProfile(e){if(e)e.preventDefault();const name=document.getElementById('pfName').value.trim(),age=Number(document.getElementById('pfAge').value),weight=Number(document.getElementById('pfWeight').value);if(!name||!age||!weight){alert('이름, 나이, 체중을 확인해 주세요.');return}const gender=document.getElementById('pfGender').value,pregEl=document.getElementById('pfPreg');S.profile={complete:true,name,gender,age,weight,pregnant:gender==='남성'?'no':(pregEl?pregEl.value:'skip')};S.kg=weight;S.ageBand=S.profile.pregnant==='yes'?'pregnant':age>=19?'adult':'teen';S.bed=document.getElementById('pfBed').value||'23:30';S.hl=Number(document.getElementById('pfHl').value)||5.5;S.tab='study';S._visitedPrimaryStudy=true;save();render();window.scrollTo(0,0)}
+function editProfile(){S.profile.complete=false;save();render();window.scrollTo(0,0)}
+function addDrink(n,mg){S.logs.push({n,mg:Number(mg)||0,t:now()});if(!S.items.some(x=>x.n===n&&Number(x.mg)===Number(mg)))S.items.push({n,mg:Number(mg)||0,type:'음료'});save();render()}
+function cancelLog(i){if(!Number.isInteger(i)||i<0||i>=S.logs.length)return;const l=S.logs[i];S.logs.splice(i,1);save();render();}
+function cancelLatestLog(){if(!S.logs.length){alert('취소할 섭취 기록이 없어요.');return}const i=S.logs.reduce((best,l,idx,arr)=>l.t>arr[best].t?idx:best,0);cancelLog(i)}
+function saveCustomItem(){const n=(document.getElementById('itemName')?.value||'').trim(),mg=Math.max(0,Math.min(2000,Number(document.getElementById('itemMg')?.value)||0)),type=document.getElementById('itemType')?.value||'음료';if(!n){alert('음료나 음식 이름을 입력해 주세요.');return}if(!document.getElementById('itemMg')?.value.trim()){alert('카페인 함량을 mg 단위로 입력해 주세요. 카페인이 없으면 0을 입력하세요.');return}const old=S.items.find(x=>x.n.toLowerCase()===n.toLowerCase());if(old){old.mg=mg;old.type=type}else S.items.push({n,mg,type});save();render()}
+function logItem(i){const x=S.items[i];if(!x)return;S.logs.push({n:x.n,mg:Number(x.mg)||0,t:now()});save();render()}
+function removeItem(i){if(!confirm('저장 항목에서 삭제할까요? 기존 섭취 기록은 유지됩니다.'))return;S.items.splice(i,1);save();render()}
+function caffeine(){
+const total=mgDay(),limit=lim(),remaining=Math.max(0,limit-total),res=Math.round(mgNow());
+const last=S.logs.length?S.logs.reduce((a,b)=>a.t>b.t?a:b):null,elapsed=last?now()-last.t:0;
+const to25=res>25?S.hl*60*Math.log2(res/25):0,hours=Math.floor(to25/60),mins=Math.round(to25%60);
+const nowDate=new Date(),nowMin=nowDate.getHours()*60+nowDate.getMinutes(),sleepAt=tm(S.bed);let sleepDelta=(sleepAt-nowMin+1440)%1440;if(!sleepDelta)sleepDelta=1440;
+const sleepResidue=Math.round(res*Math.pow(.5,sleepDelta/60/S.hl)),pct=limit?Math.min(100,Math.round(total/limit*100)):0;
+const deadline=hm(cutMin()),profile=S.profile||{};
+const saved=S.items.map((x,i)=>`<div class="li"><span><b>${escapeHTML(x.n)}</b><br><span class="sub">${escapeHTML(x.type||'음료')} · ${Number(x.mg)||0} mg</span></span><span><button class="chip" onclick="logItem(${i})">＋ 기록</button> <button class="chip" onclick="removeItem(${i})">삭제</button></span></div>`).join('');
+const recent=S.logs.slice().sort((a,b)=>b.t-a.t).slice(0,8);
+return `<h1>☕ ${escapeHTML(profile.name||'내')}의 카페인 타이머 <button class="chip" onclick="editProfile()">프로필 수정</button></h1>
+<div class="card hero"><div class="sub">현재 체내 카페인 잔량 추정</div><div class="timer-face" id="caffeineAmount" style="color:#fff;font-size:3.1rem">${res} mg</div><div class="sub" style="color:#eaf8ed;text-align:center">최근 섭취 기록과 반감기 ${S.hl}시간을 기준으로 계산한 참고용 추정치예요.</div><div class="bar" style="background:rgba(255,255,255,.25);margin-top:14px"><i id="caffeineBar" style="width:${Math.min(100,res/Math.max(1,limit)*100)}%;background:#fff"></i></div><div class="between" style="margin-top:12px"><span class="sub" style="color:#eaf8ed">25mg 이하 예상까지</span><b id="caffeineCountdown">${res<=25?'도달했어요':hours+'시간 '+mins+'분'}</b></div><div class="between" style="margin-top:8px"><span class="sub" style="color:#eaf8ed">마지막 섭취 후 경과</span><b id="caffeineElapsed">${last?formatElapsed(elapsed):'섭취 기록 없음'}</b></div></div>
+<div class="card"><div class="between"><h2>📊 오늘 카페인 예산</h2><b>${total} / ${limit} mg</b></div><div class="bar"><i style="width:${pct}%;background:${pct>=100?'var(--r)':pct>=75?'var(--y)':'var(--g)'}"></i></div><div class="between sub"><span>오늘 남은 기준량 ${remaining}mg</span><span>${pct}%</span></div><div class="sub" style="margin-top:6px">${Number(profile.age)<19?`청소년 참고 기준: 체중 ${Number(profile.weight)||S.kg}kg × 2.5mg, 최대 150mg`:profile.pregnant==='yes'?'임신 중 참고 기준: 하루 300mg 이하':'성인 참고 기준: 하루 400mg 이하'}${profile.pregnant==='skip'?' · 임신 여부 미응답으로 일반 기준을 표시 중':''}</div>${total>limit?'<div class="warn">오늘 설정한 기준을 넘었어요. 추가 카페인 섭취를 피하고 몸 상태를 살펴보세요.</div>':''}</div>
+<div class="card"><h2>＋ 자주 먹는 음료·음식 기록</h2><div class="sub" style="margin-bottom:8px">한 번 저장해 두면 다음부터는 ‘기록’만 눌러 바로 추가할 수 있어요.</div>${saved||'<div class="sub">아직 저장된 항목이 없어요. 아래에서 처음 항목을 만들어 주세요.</div>'}</div>
+<div class="card"><h2>새 음료·음식 항목 만들기</h2><label>항목 이름</label><input id="itemName" placeholder="예: 편의점 라떼, 초콜릿, 단백질 음료"><div class="row"><div><label>종류</label><select id="itemType"><option value="음료">음료</option><option value="음식">음식</option><option value="보충제">보충제·기타</option></select></div><div><label>1회 섭취 카페인 (mg)</label><input id="itemMg" type="number" min="0" max="2000" step="1" placeholder="없으면 0"></div></div><button class="btn" style="width:100%;margin-top:10px" onclick="saveCustomItem()">항목 저장</button><div class="sub" style="margin-top:6px">카페인이 없는 음식도 0mg으로 저장할 수 있어요. 제품 표시의 1회 제공량 기준으로 입력하세요.</div></div>
+<div class="card"><h2>🌙 카페인 마감 지키기</h2><div class="big">오늘 마감 ${deadline}</div><div class="sub">계산 기준: 기본 반감기 5.5시간일 때 취침 약 6시간 전을 마감으로 잡고, 설정한 반감기에 비례해 조정해요. 개인차가 있으므로 참고용 시각이며, 실제 반응과 섭취량에 따라 달라질 수 있어요.</div><div class="between" style="margin-top:10px"><span>마감 지킨 기록</span><b>${streak()}일 연속</b></div><div class="sub">기록된 섭취 시각을 바탕으로 계산하므로 기록하지 않은 섭취는 반영되지 않아요.</div><label>취침 예정 시각</label><input type="time" value="${S.bed}" onchange="S.bed=this.value;save();render()"><div class="big" style="margin-top:6px">취침 시 예상 잔량 약 ${sleepResidue}mg</div></div>
+<div class="card"><div class="between"><h2>🕒 최근 섭취 기록</h2><button class="chip" onclick="cancelLatestLog()">마지막 기록 취소</button></div>${recent.length?recent.map(l=>{const idx=S.logs.indexOf(l);return `<div class="li"><span><b>${escapeHTML(l.n)}</b><br><span class="sub">${new Date(l.t).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})} · ${formatElapsed(now()-l.t)} 전</span></span><span>${l.mg} mg <button class="chip" onclick="cancelLog(${idx})">취소</button></span></div>`}).join(''):'<div class="sub">아직 기록이 없어요.</div>'}<div class="sub" style="margin-top:8px">실수로 기록했다면 해당 항목의 ‘취소’를 누르세요. 취소하면 체내 잔량 추정과 하루 합계에서도 제외됩니다.</div><div class="sub" style="margin-top:8px">잔량은 반감기를 이용한 추정치이며 실제 체내 농도를 측정하지 않아요.</div></div>
+<div class="card"><h2>⚙️ 프로필 기준</h2><div class="li"><span>이름</span><b>${escapeHTML(profile.name||'')}</b></div><div class="li"><span>성별</span><b>${escapeHTML(profile.gender||'미선택')}</b></div><div class="li"><span>나이</span><b>${Number(profile.age)||'-'}세</b></div><div class="li"><span>체중</span><b>${Number(profile.weight)||S.kg}kg</b></div>${profile.gender==='남성'?'':`<div class="li"><span>임신 여부</span><b>${profile.pregnant==='yes'?'예':profile.pregnant==='skip'?'미응답':'아니요'}</b></div>`}<div class="sub" style="margin-top:8px">성별은 개인 프로필에 저장되며 한도 계산에는 직접 사용하지 않아요. 이 기준은 일반적인 참고값이고 개인별 건강 상태를 진단하지 않습니다.</div></div>`;
+}
+function formatElapsed(ms){const m=Math.max(0,Math.floor(ms/60000));const h=Math.floor(m/60),r=m%60;return h?`${h}시간 ${r}분`:`${r}분`}
+function escapeHTML(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function rate(v){S.focus.push({v,t:now(),mg:Math.round(mgNow())});S.lastRate={v,t:now()};save();render();if(v<=2)foodPop()}
+function exam(){
+const e=tm(S.exam),drink=e-60,cut=cutMin();
+const dose=Math.round(lim()*0.4/5)*5,after=Math.round(dose*Math.pow(.5,(bedMin()-drink)/60/S.hl));
+const er=S.examRange||{};return `<h1>📝 시험 기간</h1><div class="card"><h2>설정한 시험 기간</h2><div class='big' style='font-size:1.1rem'>${er.start?(er.end?`${er.start} ~ ${er.end}`:`${er.start} ~ 종료일 미선택`):'일정 탭에서 시험 시작일과 종료일을 선택해 주세요.'}</div><button class='chip' onclick="go('cal')">달력에서 기간 설정</button></div><div class="card"><h2>시험일 카페인 참고 계산</h2>
+<label>시험 시작 시각</label><input type="time" value="${S.exam}" onchange="S.exam=this.value;save();render()">
+<div class="sub" style="margin-top:6px">예: 수능 1교시 08:40</div></div>
+<div class="card"><div class="sub">마시는 시각 (피크가 시험 시작과 맞도록)</div><div class="big">${hm(drink)}</div>
+<div class="sub" style="margin-top:8px">제안량: ${dose}mg 이하 (하루 한도의 40%)</div>
+<div class="sub">마셔도 취침 시각에는 약 ${after}mg이 남을 수 있어요.</div></div>
+<div class="card"><div class="sub">이날 마지막 카페인 마감 (내 반감기 기준)</div><div class="big">${hm(cut)}</div>
+<div class="sub" style="margin-top:6px">기본 반감기 5.5시간 기준으로 취침 약 6시간 전을 마감으로 계산하고, 설정한 반감기에 따라 조정한 참고 시각이에요.</div></div>
+<div class="card"><h2>시험 당일 식사 팁</h2><div class="sub">평소 안 먹던 음식은 피하고, 시험 1~2시간 전에는 단백질과 복합 탄수를 곁들인 가벼운 식사가 안전해요. 아침 공복 카페인은 속쓰림이 올 수 있어요.</div>
+<div class="warn">시험이 처음 마셔보는 날이면 안 돼요. 미리 연습해서 내 반응을 확인하세요.</div></div>`}
+function food(){
+const sc=S.pick.length?score(S.pick):null,l=sc!==null?LV[sc]:null;
+return `<h1>🍙 음식 조합 비교</h1><div class="card"><h2>먹을 걸 골라보세요</h2><div>${FD.map(f=>`<button class="chip ${S.pick.includes(f[0])?"on":""}" onclick="tp('${f[0]}')">${f[0]}</button>`).join("")}</div></div>
+<div class="card"><h2>오후 졸림 위험 신호등</h2>${l?`<div class="light"><span class="dot" style="background:${l[0]}"></span>${l[1]}</div>
+<div class="sub" style="margin-top:8px">정제 탄수가 많고 단백질·지방·섬유가 적을수록 위험이 올라가요. 단 것만 고르면 빨강이에요.</div>
+<button class="btn" style="margin-top:10px" onclick="eat()">먹었어요 기록</button>`:`<div class="sub">음식을 골라보세요. 2개 이상 조합도 돼요.</div>`}
+<div class="warn">GI/GL을 단순화한 대략 점수라 혈당 수치를 예측하는 건 아니에요.</div></div>
+${customCard()}${menuCard()}<div class="card"><h2>오늘 먹은 것</h2>${S.meals.filter(m=>m.t>=today()).map(m=>`<div class="li"><span>${m.n}</span><span class="sub">${new Date(m.t).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}</span></div>`).join("")||'<div class="sub">아직 없어요.</div>'}</div>${sleepCard()}`}
+function tp(n){const i=S.pick.indexOf(n);i<0?S.pick.push(n):S.pick.splice(i,1);render()}
+function eat(){S.meals.push({n:S.pick.join(" + "),it:S.pick.slice(),t:now()});S.pick=[];save();render()}
+function sos0(){const d=SOS[S.sym];
+return `<h1>🆘 배 아플 때</h1><div class="card"><h2>증상을 고르세요</h2>${Object.keys(SOS).map(k=>`<button class="chip ${S.sym===k?"on":""}" onclick="S.sym='${k}';render()">${k}</button>`).join("")}</div>
+<div class="card"><h2>먹어볼 것</h2>${d.eat.map(x=>`<div class="li">✅ ${x}</div>`).join("")}<h2 style="margin-top:12px">피할 것</h2>${d.avoid.map(x=>`<div class="li">🚫 ${x}</div>`).join("")}
+<div class="sub" style="margin-top:10px">💬 ${d.why}</div></div>
+<div class="warn">참기 어려운 심한 복통, 고열, 피가 섞인 변·구토, 계속되는 증상은 바로 보건실이나 병원에 가세요. 이 정보는 참고용이에요.</div>`}
+const bedMin=()=>{const b=tm(S.bed);return b<720?b+1440:b};
+const cutMin=()=>bedMin()-Math.round(S.hl*60*6/5.5);
+function nowCheck(){
+const d=new Date(),nm=d.getHours()*60+d.getMinutes(),cut=cutMin();
+let dtMin=(bedMin()-nm+1440)%1440;if(dtMin===0)dtMin=1440;const dt=dtMin/60;
+const rem=Math.round((mgNow()+130)*Math.pow(.5,dt/S.hl));
+const ok=nm<=cut&&mgDay()+130<=lim();
+return `<div class="card"><h2>❓ 지금 아메리카노 마셔도 될까?</h2><div class="light"><span class="dot" style="background:${ok?"var(--g)":"var(--r)"}"></span>${ok?"괜찮아요":"참는 게 좋아요"}</div><div class="sub" style="margin-top:6px">취침(${S.bed})에 약 ${rem}mg 남아요. ${nm>cut?"내 카페인 마감("+hm(cut)+")이 지났어요.":mgDay()+130>lim()?"오늘 한도를 넘어요.":"마감("+hm(cut)+") 전이에요."}</div></div>`}
+function streak(){const cut=cutMin();let s=0;
+for(let i=0;i<30;i++){const d0=today()-i*864e5,d1=d0+864e5;
+const used=S.logs.concat(S.focus,S.meals).some(x=>x.t>=d0&&x.t<d1);
+const bad=S.logs.some(l=>l.t>=d0&&l.t<d1&&(l.t-d0)/6e4>cut);
+if(i===0){if(bad)return 0;continue}
+if(!used||bad)break;s++}return s}
+function streakCard(){const s=streak();return `<div class="card"><h2>🔥 카페인 마감 지키기</h2><div class="big">${s}일 연속</div><div class="sub">마감(${hm(cutMin())}) 이후 카페인 없이 보낸 날이에요. 기록한 날만 세요.</div></div>`}
+function expCard(){return ''}
+function sleepCard(){
+const ms=S.meals.filter(m=>m.it),pend=ms.filter(m=>m.sl===undefined);
+let q="";const old=pend.find(m=>now()-m.t>=36e5);
+if(old)q=`<div style="margin-bottom:10px"><b>${old.n}</b> 먹고 졸렸어요?<div style="margin-top:6px"><button class="chip" onclick="ansSl(${old.t},1)">😪 네</button><button class="chip" onclick="ansSl(${old.t},0)">🙂 아니요</button></div></div>`;
+else if(pend.length)q=`<div class="sub" style="margin-bottom:8px">식후 1시간 뒤에 졸림을 물어볼게요. (약 ${Math.max(1,Math.ceil((36e5-(now()-pend[pend.length-1].t))/6e4))}분 남음)</div>`;
+const st={};ms.filter(m=>m.sl!==undefined).forEach(m=>m.it.forEach(i=>{st[i]=st[i]||[0,0];st[i][1]++;st[i][0]+=m.sl}));
+const rk=Object.entries(st).filter(e=>e[1][1]>=2).sort((a,b)=>b[1][0]/b[1][1]-a[1][0]/a[1][1]).slice(0,3);
+return `<div class="card"><h2>😪 내가 약한 음식</h2>${q}${rk.length?rk.map(e=>`<div class="li"><span>${e[0]}</span><span>졸림 ${Math.round(e[1][0]/e[1][1]*100)}% (${e[1][1]}회)</span></div>`).join(""):'<div class="sub">같은 음식을 2번 이상 기록하고 답하면 순위가 나와요.</div>'}</div>`}
+function ansSl(t,v){const m=S.meals.find(x=>x.t===t);if(m)m.sl=v;save();render()}
+const cl=ms=>{const s=Math.max(0,Math.ceil(ms/1e3));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+function setTimerStyle(v){S.timerStyle=v;save();render()}
+function startStudy(m){m=Math.max(1,Math.min(600,Number(m)||25));S.tm={min:m,end:now()+m*6e4,start:now(),subj:S.sel,n:1,mode:'t',style:S.timerStyle};save();render()}
+function startSW(){S.tm={mode:'s',start:now(),subj:S.sel,n:1,style:S.timerStyle};save();render()}
+function stopSW(){const m=Math.max(1,Math.round((now()-S.tm.start)/6e4));S.tm={mode:'t',min:m,end:now(),start:S.tm.start,subj:S.tm.subj,n:99};save();render()}
+function doneStudy(){if(!S.tm)return;S.study.push({m:S.tm.min,t:now(),s:S.tm.subj});S.tm=null;save();render()}
+function study0(){
+const t=S.tm,run=t&&t.end>now(),dn=t&&t.end<=now();
+const ts=S.study.filter(s=>s.t>=today()),mins=ts.reduce((a,s)=>a+s.m,0);
+const d=new Date(),nm=d.getHours()*60+d.getMinutes();
+const tip=nm<=cutMin()&&mgDay()<lim()*.8?"카페인 마감 전이고 예산도 남았어요. 녹차 같은 저카페인부터 시도해보세요.":"카페인 마감이 지났거나 예산이 부족해요. 찬물 한 잔, 5분 스트레칭, 견과류 한 줌을 추천해요.";
+let body;
+if(run)body=`<div class="big" id="clock" style="font-size:3rem;text-align:center">${cl(t.end-now())}</div><div class="sub" style="text-align:center">${t.min}분 타이머 진행 중</div><div style="text-align:center;margin-top:10px"><button class="chip" onclick="S.tm=null;save();render()">중단</button></div>`;
+else if(dn)body=`<h2>🎉 ${t.min}분 타이머 완료!</h2><button class="btn" onclick="S.study.push({m:S.tm.min,t:now(),s:S.tm.subj});S.tm=null;save();render()">완료 기록 저장</button>`;
+else body=`<h2>타이머 시간을 선택하세요</h2><div>${[25,45,50].map(m=>`<button class="chip" onclick="startStudy(${m})">${m}분</button>`).join("")}</div><div class="sub" style="margin-top:8px">지금 몸에 남은 카페인 약 ${Math.round(mgNow())}mg</div>`;
+return `<h1>⏱ 공부 타이머</h1><div class="card">${body}</div><div class="card"><h2>오늘 공부</h2><div class="big">${Math.floor(mins/60)}시간 ${mins%60}분</div><div class="sub">${ts.length}세션 · 완료한 타이머가 기록돼요</div></div><div class="card"><h2>졸릴 때 어떡하지?</h2><div class="sub">${tip}</div></div>`}
+setInterval(()=>{
+const ca=document.getElementById('caffeineAmount');if(ca){const r=Math.round(mgNow());ca.textContent=r+' mg';const cb=document.getElementById('caffeineBar');if(cb)cb.style.width=Math.min(100,r/Math.max(1,lim())*100)+'%';const cc=document.getElementById('caffeineCountdown');if(cc){if(r<=25)cc.textContent='도달했어요';else{const m=S.hl*60*Math.log2(r/25);cc.textContent=Math.floor(m/60)+'시간 '+Math.round(m%60)+'분'}}const ce=document.getElementById('caffeineElapsed');const ll=S.logs.length?S.logs.reduce((a,b)=>a.t>b.t?a:b):null;if(ce)ce.textContent=ll?formatElapsed(now()-ll.t):'섭취 기록 없음'}
+const t=S.tm;if(!t)return;const c=document.getElementById('clock'),sw=t.mode==='s';
+if(sw){if(c)c.textContent=cl(now()-t.start)}else{const r=t.end-now();if(r<=0){if(c&&c.textContent!=='00:00'){c.textContent='00:00';beep();render()}return}if(c)c.textContent=cl(r);const ring=document.getElementById('timerRing');if(ring){const pct=Math.max(0,Math.min(100,r/Math.max(1,t.min*60000)*100));ring.style.setProperty('--progress',pct+'%')}const bar=document.getElementById('timerBar');if(bar)bar.style.width=Math.max(0,Math.min(100,(1-r/Math.max(1,t.min*60000))*100))+'%'}
+},500);
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator();o.connect(a.destination);o.frequency.value=880;o.start();setTimeout(()=>{o.stop();a.close()},350)}catch(e){}}
+function ov(h){let o=document.getElementById('ov');if(!o){o=document.createElement('div');o.id='ov';document.body.appendChild(o)}o.innerHTML='<div>'+h+'</div>';o.style.display='flex'}
+function closeOv(){const o=document.getElementById('ov');if(o)o.style.display='none'}
+function alertFocus(){beep();try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){} try{if(window.Notification&&Notification.permission==='granted')new Notification('타이머',{body:'설정한 타이머가 진행 중이에요.'})}catch(e){}}
+function chkAns(v){closeOv()}
+function foodPop(){const d=new Date(),ok=d.getHours()*60+d.getMinutes()<=cutMin()&&mgDay()<lim()*.8;
+const L=[['💧','물 한 컵','탈수만으로도 피곤해져요','#d2ecfa,#69b7e6'],['🥜','견과류 한 줌','단백질·지방으로 오래가요','#f6d9a8,#e4a35a'],['🍌','바나나','가볍게 당 보충','#fff3b0,#f2c94c'],['🥚','삶은 달걀','든든하게 포만감 유지','#fde6d0,#f0b98a']];
+if(ok)L[3]=['🍵','녹차','저카페인 + 테아닌','#d4ecd0,#79b878'];
+ov(`<h2>😪 이럴 땐 이런 걸 먹어봐요</h2><div class='fg'>${L.map(x=>`<div class='fc' style='background:linear-gradient(145deg,${x[3]})'><b>${x[0]}</b>${x[1]}<span>${x[2]}</span></div>`).join('')}</div><div class='sub' style='margin-top:8px'>${ok?'카페인 마감 전이라 녹차도 가능해요.':'지금은 카페인을 피하는 게 좋아요.'} 졸림이 계속되면 잠깐 쉬는 것도 방법이에요.</div><button class='btn' style='width:100%;margin-top:10px' onclick='closeOv()'>닫기</button>`)}
+function addSubj(){const v=document.getElementById('ns').value.trim();if(v&&!S.subj.includes(v)){S.subj.push(v);S.sel=v;save()}render()}
+function addTodo(){const v=document.getElementById('nt').value.trim();if(v){S.todos.push({id:now(),s:S.sel,x:v,d:0});save()}render()}
+function togTodo(id){const t=S.todos.find(x=>x.id===id);if(t)t.d=t.d?0:1;save();render()}
+function delTodo(id){S.todos=S.todos.filter(x=>x.id!==id);save();render()}
+function study(){
+const t=S.tm,sw=t&&t.mode==='s',run=t&&(sw||t.end>now()),dn=t&&!sw&&t.end<=now();
+const ts=S.study.filter(s=>s.t>=today()),mins=ts.reduce((a,s)=>a+s.m,0),by={};ts.forEach(s=>by[s.s||'기타']=(by[s.s||'기타']||0)+s.m);
+const chips=S.subj.map(s=>`<button class='chip ${S.sel===s?'on':''}' onclick="S.sel='${escapeHTML(s)}';save();render()">${escapeHTML(s)}</button>`).join('');
+const styleButtons=[['ring','원형 집중'],['digital','디지털'],['minimal','미니멀']].map(([v,n])=>`<button class='chip ${S.timerStyle===v?'on':''}' onclick="setTimerStyle('${v}')">${n}</button>`).join('');
+let body;
+if(run){
+ const remain=sw?now()-t.start:t.end-now(),total=sw?Math.max(1,remain):Math.max(1,t.min*60000),progress=sw?0:Math.max(0,Math.min(100,(remain/total)*100));
+ const clock=t.style==='ring'?`<div class='timer-ring' id='timerRing' style='--progress:${progress}%'><div><div class='timer-number' id='clock'>${cl(remain)}</div><div class='sub'>${sw?'경과 시간':'남은 시간'}</div></div></div>`:t.style==='minimal'?`<div class='minimal-timer'><div class='sub'>${escapeHTML(t.subj)} · ${sw?'스톱워치':'집중 중'}</div><div class='timer-number' id='clock'>${cl(remain)}</div><div class='bar'><i id='timerBar' style='width:${100-progress}%'></i></div></div>`:`<div class='digital-timer'><div class='sub'>${escapeHTML(t.subj)} · ${sw?'스톱워치':t.min+'분 집중 세션'}</div><div class='timer-number' id='clock'>${cl(remain)}</div><div class='sub'>방해 요소를 잠시 내려놓고 지금 과목에 집중해요.</div></div>`;
+ body=`${clock}<div class='between' style='margin-top:12px'><span class='sub'>${escapeHTML(t.subj)} · ${sw?'스톱워치':t.min+'분 타이머'}</span><button class='chip' onclick="${sw?'stopSW()':'S.tm=null;save();render()'}">${sw?'⏹ 종료':'중단'}</button></div>`;
+}else if(dn){body=`<div class='card hero' style='text-align:center'><div style='font-size:2.5rem'>✓</div><h2>집중 세션 완료!</h2><div class='sub'>${escapeHTML(t.subj)} · ${t.min}분</div><button class='btn' style='margin-top:10px' onclick='doneStudy()'>공부 기록 저장</button><button class='chip' onclick='S.tm=null;save();render()'>새 타이머</button></div>`}
+else {body=`<h2>과목 선택</h2><div>${chips}</div><div class='row' style='margin-top:8px'><input id='ns' placeholder='과목 추가 (예: 과학)'><button class='btn' onclick='addSubj()'>과목 추가</button></div><h2 style='margin-top:16px'>타이머 디자인</h2><div>${styleButtons}</div><h2 style='margin-top:16px'>집중 시간</h2><div class='timer-presets'>${[15,25,40,45,50,60].map(m=>`<button class='chip' onclick='startStudy(${m})'>${m}분</button>`).join('')}</div><div class='row' style='margin-top:10px'><input id='customMinutes' type='number' min='1' max='600' placeholder='직접 입력 (분)'><button class='btn' onclick="startStudy(document.getElementById('customMinutes').value)">시작</button></div><button class='chip' style='margin-top:10px' onclick='startSW()'>⏱ 스톱워치 시작</button><div class='sub' style='margin-top:8px'>시간이 끝나면 완료 버튼으로 기록을 저장할 수 있어요.</div>`}
+const td=S.todos.filter(x=>x.s===S.sel);
+return `<h1>⏱ 공부 타이머</h1><div class='card'>${body}</div><div class='card'><div class='between'><h2>오늘 공부한 시간</h2><span class='sub'>${ts.length}회 기록</span></div><div class='big'>${Math.floor(mins/60)}시간 ${mins%60}분</div>${Object.keys(by).map(k=>`<div class='li'><span>${escapeHTML(k)}</span><span>${by[k]}분</span></div>`).join('')||"<div class='sub'>아직 기록이 없어요. 첫 타이머를 시작해 보세요.</div>"}</div><div class='card'><h2>✅ ${escapeHTML(S.sel)} 할 일</h2>${td.map(x=>`<div class='li'><span onclick='togTodo(${x.id})' style='${x.d?'text-decoration:line-through;opacity:.5':''}'>${x.d?'☑':'☐'} ${escapeHTML(x.x)}</span><button class='chip' onclick='delTodo(${x.id})'>삭제</button></div>`).join('')}<div class='row' style='margin-top:8px'><input id='nt' placeholder='할 일 입력'><button class='btn' onclick='addTodo()'>추가</button></div></div>`}
+function ddCard(){if(!S.dd)return `<div class='card hero'><h2>📌 D-day</h2><div class='sub'>일정 탭에서 시험 날짜를 정해요.</div></div>`;
+const n=Math.round((new Date(S.dd.d+'T00:00')-today())/864e5);
+return `<div class='card hero'><div class='sub'>${S.dd.n}</div><div class='big' style='font-size:2.8rem'>${n>0?'D-'+n:n==0?'D-DAY':'D+'+(-n)}</div></div>`}
+let CM=0,CD=null;
+function selectExamDate(date){if(!S.examRangeEditing){return}if(!S.examRange)S.examRange={start:null,end:null};if(!S.examRange.start||S.examRange.end){S.examRange={start:date,end:null}}else{const a=S.examRange.start,b=date;S.examRange={start:a<b?a:b,end:a<b?b:a}}save();render()}
+function toggleExamRangeEdit(){S.examRangeEditing=true;save();render()}
+async function saveExamRange(){if(!S.examRange||!S.examRange.start||!S.examRange.end){alert('시험 시작일과 종료일을 모두 선택해 주세요.');return}const committed={start:S.examRange.start,end:S.examRange.end};S.examRange=committed;S.examRangeEditing=false;try{localStorage.setItem('sst_examRange',JSON.stringify(committed));localStorage.setItem('sst',JSON.stringify(S));const check=JSON.parse(localStorage.getItem('sst_examRange')||'null');if(!check||check.start!==committed.start||check.end!==committed.end)throw new Error('로컬 저장값 확인 실패');const ok=SERVER_READY?await persistServerState():false;if(!ok){alert('브라우저에는 임시 저장했지만 서버 저장을 확인하지 못했어요. 인터넷 연결을 확인하고 다시 저장해 주세요.');render();return}alert('시험 기간을 서버에 저장했어요. 다시 로그인해도 유지됩니다.')}catch(e){console.error('시험 기간 저장 실패:',e);alert('시험 기간 저장에 실패했어요. 다시 시도해 주세요.')}render()}
+function inExamRange(date){const r=S.examRange||{};return !!(r.start&&r.end&&date>=r.start&&date<=r.end)}
+function setDD(){const n=document.getElementById('ddn').value.trim(),d=document.getElementById('ddd').value;if(d){S.dd={n:n||'시험',d};save()}render()}
+function cal(){
+const b=new Date();b.setDate(1);b.setMonth(b.getMonth()+CM);
+const y=b.getFullYear(),m=b.getMonth(),f=b.getDay(),n=new Date(y,m+1,0).getDate(),mp={};
+S.study.forEach(s=>{const d=new Date(s.t);if(d.getFullYear()==y&&d.getMonth()==m)mp[d.getDate()]=(mp[d.getDate()]||0)+s.m});
+const dd=S.dd?new Date(S.dd.d+'T00:00'):null,tn=new Date();let c='';
+for(let i=0;i<f;i++)c+='<i></i>';
+for(let d=1;d<=n;d++){const isD=dd&&dd.getFullYear()==y&&dd.getMonth()==m&&dd.getDate()==d,isT=CM==0&&tn.getDate()==d;
+const iso=String(y)+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),er=S.examRange||{},inR=inExamRange(iso),edge=iso===er.start||iso===er.end;c+=`<button class='day ${isT?'td':''} ${isD?'dd':''} ${CD===d?'sel':''} ${inR?'examrange':''} ${edge?'examedge':''}' onclick="CD=${d};selectExamDate('${iso}')">${d}<small>${mp[d]?mp[d]+'분':isD?'D-day':inR?'시험':''}</small></button>`}
+const ss=CD?S.study.filter(s=>{const d=new Date(s.t);return d.getFullYear()==y&&d.getMonth()==m&&d.getDate()==CD}):[];
+const er=S.examRange||{};const examPeriod=er.start?(er.end?`${er.start} ~ ${er.end}`:`${er.start} · 종료일 선택 필요`):'시험 기간 미설정';return `<h1>📅 일정</h1><div class='card'><div class='between'><b>시험 기간</b><span class='sub' id='examRangeStatus'>${examPeriod}</span></div><div class='row' style='margin-top:8px'><button class='chip' onclick="toggleExamRangeEdit()">기간 수정</button><button class='chip' onclick="saveExamRange()">기간 저장</button><button class='chip' onclick="S.examRange={start:null,end:null};S.examRangeEditing=true;try{localStorage.setItem('sst_examRange',JSON.stringify(S.examRange))}catch(e){}save();render()">기간 지우기</button></div><div class='sub' style='margin-top:6px'>${S.examRangeEditing?'달력에서 시작일을 누른 뒤 종료일을 눌러 주세요.':'저장된 기간을 유지 중이에요. 수정하려면 ‘기간 수정’을 누르세요.'}</div></div><div class='card'><h2>📌 시험 D-day 설정</h2><input id='ddn' placeholder='시험 이름' value='${S.dd?S.dd.n:''}'><label>시험 날짜</label><input id='ddd' type='date' value='${S.dd?S.dd.d:''}'><button class='btn' style='margin-top:8px' onclick='setDD()'>저장</button></div>
+<div class='card'><div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px'><button class='chip' onclick='CM--;CD=null;render()'>◀</button><b>${y}년 ${m+1}월</b><button class='chip' onclick='CM++;CD=null;render()'>▶</button></div><div class='cg'>${c}</div><div class='sub' style='margin-top:6px'>칸에는 그날 공부한 분이 표시돼요.</div></div>
+${CD?`<div class='card'><h2>${m+1}월 ${CD}일</h2>${ss.map(s=>`<div class='li'><span>${s.s||'기타'}</span><span>${s.m}분</span></div>`).join('')||"<div class='sub'>기록이 없어요.</div>"}</div>`:''}`}
+function logMenu(){S.meals.push({n:'급식: '+menuItems().join(', '),t:now()});save();render()}
+function menuItems(){return S.menu.split(/[\n,]+/).map(x=>x.trim()).filter(Boolean)}
+function menuCard(){const it=menuItems();
+return `<div class='card'><h2>🍱 오늘 급식</h2><textarea rows='3' placeholder='급식 메뉴를 붙여넣기 (줄바꿈이나 쉼표로 구분)' style='width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px' onchange='S.menu=this.value;save();render()'>${S.menu}</textarea>${it.length?`<div style='margin-top:6px'>${it.map(x=>`<span class='chip'>${x}</span>`).join('')}</div><button class='btn' style='margin-top:8px' onclick='logMenu()'>급식 먹었어요</button>`:''}</div>`}
+function dayStat(i){const d0=today()-i*864e5,d1=d0+864e5,cut=cutMin(),L=S.logs.filter(l=>l.t>=d0&&l.t<d1);
+if(![...S.logs,...S.focus,...S.meals,...S.study].some(x=>x.t>=d0&&x.t<d1))return 0;
+return (L.some(l=>(l.t-d0)/6e4>cut)?0:10)+(L.reduce((a,l)=>a+l.mg,0)>lim()?0:5)+(S.meals.some(m=>m.t>=d0&&m.t<d1)?5:0)}
+function myScore(){let h=0,m=0;for(let i=0;i<7;i++){h+=dayStat(i);const d0=today()-i*864e5;m+=S.study.filter(s=>s.t>=d0&&s.t<d0+864e5).reduce((a,s)=>a+s.m,0)}return{h:h+Math.min(30,S.gw*3),s:Math.min(120,Math.round(m/5))}}
+function fame(){const s=myScore(),me=s.h+s.s;
+const R=[['하늘 (예시)',118],['지우 (예시)',96],['도윤 (예시)',74],['서연 (예시)',52],['나',me]].sort((a,b)=>b[1]-a[1]),first=R[0][0]==='나';
+return `<h1>🏆 명예의 전당</h1><div class='card hero'><div class='sub'>이번 주 1등 보상</div><div style='font-size:1.3rem;font-weight:800'>🎁 건강식품 기프티콘</div><div class='sub'>${first?'지금 내가 1등이에요! 🎉':'1등과 '+(R[0][1]-me)+'점 차이예요.'}</div></div>
+<div class='card'><h2>이번 주 순위 (최근 7일)</h2>${R.map((r,i)=>`<div class='rk ${r[0]==='나'?'me':''}'><span>${i+1}. ${r[0]}</span><span>${r[1]}점</span></div>`).join('')}</div>
+<div class='card'><h2>내 점수 = ${me}점</h2><div class='li'><span>🍽 식습관 점수</span><span>${s.h}</span></div><div class='li'><span>📚 공부 점수</span><span>${s.s}</span></div><div class='sub' style='margin-top:8px'>식습관: 하루마다 카페인 마감 지키기 +10, 하루 한도 지키기 +5, 식사 기록 +5 (최대 140). 공부: 5분당 1점 (최대 120). 식습관을 잘 지켜야 이기도록 만들었어요.</div><div class='warn'>친구 점수는 예시 데이터예요. 실제 반 순위와 기프티콘 지급은 서버와 운영이 필요해요.</div></div>`}
+
+FD.push(...S.cf.map(c=>[c.n,c.carb,c.buf]));
+let CFR='',G=null,SS=null;
+const SYS='너는 식품공학을 아는 고등학생용 식단 코치야. 아래 음식을 평가해줘. 형식: 1) 추정 성분 한 줄 2) 식품공학 관점 평가(전분 구조와 가공, 단백질·지방·식이섬유 완충, 카페인, 보관 안전 중 해당되는 것) 3) 공부할 때 개선 팁 1~2개 4) 5점 만점 점수. 혈당과 졸림을 직접 예측할 수 없고 추정이라는 점을 한 줄로 밝혀. 의학 진단은 하지 마. 8줄 이내 한국어로.';
+function lvl(g,fb,p,f){const x=g-2*fb-.5*p-.3*f;return x<=5?0:x<=15?1:x<=30?2:3}
+function addCF(){const v=i=>+document.getElementById(i).value||0,n=document.getElementById('cn').value.trim();if(!n)return;
+const g=v('cg2'),fb=v('cf2'),p=v('cp'),f=v('cfat'),mg=v('cm');
+const carb=g>=20?3:g>=10?2:g>=4?1:0,buf=(fb>=3?1:0)+(p>=8?1:0);
+if(!FD.find(x=>x[0]===n)){FD.push([n,carb,buf]);S.cf.push({n,carb,buf})}
+S.meals.push({n,it:[n],t:now()});if(mg)S.logs.push({n,mg,t:now()});save();
+CFR=n+': '+LV[lvl(g,fb,p,f)][1]+' (당류 '+g+'g, 식이섬유 '+fb+'g, 단백질 '+p+'g, 지방 '+f+'g)';render()}
+async function aiRun(p,blob){const o=document.getElementById('aiOut');o.textContent='평가 중…';
+try{const sm=typeof claude!=='undefined'?await claude.use('sample'):null;
+if(!sm){o.textContent='이 화면에서는 AI 평가를 쓸 수 없어요. 채팅창에 음식 사진이나 이름을 보내면 바로 평가해줄게요.';return}
+const op={onText:r=>{o.textContent=r.text},cache:false};
+if(blob){const l=await sm.limits();if(!l||!l.images){o.textContent='이 환경에서는 사진 평가가 막혀 있어요. 채팅창에 사진을 보내주세요.';return}op.images=[blob]}
+const r=await sm(p,op);o.textContent=r.text}catch(e){o.textContent='평가 실패: '+((e&&(e.message||e.code))||'')}}
+function aiText(){const g=id=>document.getElementById(id).value,n=g('cn').trim();if(!n)return;aiRun(SYS+'\n음식: '+n+'\n당류 '+g('cg2')+'g, 식이섬유 '+g('cf2')+'g, 단백질 '+g('cp')+'g, 지방 '+g('cfat')+'g, 카페인 '+g('cm')+'mg (빈칸은 모름)')}
+function aiPhoto(el){if(el.files[0])aiRun(SYS+'\n사진 속 음식을 평가해줘. 양과 성분은 추정이라고 밝혀.',el.files[0])}
+function customCard(){const I=(id,ph)=>`<input id='${id}' type='number' inputmode='decimal' placeholder='${ph}'>`;
+return `<div class='card'><h2>➕ 내가 먹은 음식 추가</h2><input id='cn' placeholder='음식 이름 (예: 마라탕)'><div class='row' style='margin-top:6px'>${I('cg2','당류 g')}${I('cf2','식이섬유 g')}</div><div class='row' style='margin-top:6px'>${I('cp','단백질 g')}${I('cfat','지방 g')}</div><div style='margin-top:6px'>${I('cm','카페인 mg (없으면 비움)')}</div><div style='display:flex;gap:6px;margin-top:8px'><button class='btn' onclick='addCF()'>기록 + 점수</button><button class='btn' onclick='aiText()'>🤖 AI 평가</button></div><label>📷 사진으로 평가</label><input id='ph' type='file' accept='image/*' onchange='aiPhoto(this)'>${CFR?`<div class='chip' style='margin-top:8px'>${CFR}</div>`:''}<div id='aiOut' class='sub' style='margin-top:8px;white-space:pre-wrap'></div><div class='sub'>점수는 당류, 식이섬유, 단백질, 지방으로 만든 단순 가정 공식이라 혈당 수치 예측이 아니에요. 추가한 음식은 위 조합 목록에도 들어가요. 성분은 포장 표시나 K-FIND에서 찾아 입력해요.</div></div>`}
+const SC=[['🍚','같은 밥, 다른 반응','전분은 아밀로스·아밀로펙틴 비율, 호화 정도, 입자 크기에 따라 소화 속도가 달라져요. 곱게 갈고 많이 익힐수록 빠르게 소화되는 경향이 있어요.'],['🥚','같이 먹으면 달라져요','단백질과 지방, 식이섬유를 곁들이면 위 배출이 늦어지고 식후 혈당 상승이 줄어드는 경향이 실험에서 보고됐어요. 대부분 성인 대상이에요.'],['☕','카페인은 제품 편차가 커요','커피와 에너지음료는 흡수가 비슷하지만 껌은 구강 점막으로 더 빨라요. 반감기는 약 2~12시간으로 개인차가 크고, 제품별 함량 편차가 더 커서 표시 확인이 중요해요.'],['🍙','수분활성도와 보관','미생물이 쓸 수 있는 자유수가 많을수록 번식하기 쉬워요. 식약처는 김밥과 도시락을 조리 후 3시간 이내에 먹으라고 안내해요.'],['⚠️','한계','혈당 지수와 인지 능력 사이에는 일관된 효과가 확인되지 않았어요. 이 앱의 점수는 식품 구조에 대한 가정이지 졸림 예측이 아니에요.']];
+const pick3=()=>[...FD].sort(()=>Math.random()-.5).slice(0,3);
+function gStart(){G={hp:80,t:0,log:'',hand:pick3()};render()}
+function gPick(i){const f=G.hand[i],d=15+f[2]*10-f[1]*8;G.hp-=d;G.t++;
+G.log=f[0]+': '+(d>0?d+' 피해!':(-d)+' 회복…')+' '+(f[1]>=2&&f[2]==0?'정제 탄수 위주라 소화가 빠를 수 있어요.':f[2]>0?'완충 요소가 있어요.':'');
+if(G.hp<=0){S.gw++;save()}else G.hand=pick3();render()}
+function gameCard(){if(!G)return `<div class='card'><h2>🎮 졸음 몬스터 배틀</h2><div class='sub'>점심 후 나타난 졸음 몬스터! 음식 카드를 골라 4턴 안에 쓰러뜨려요. 단백질과 식이섬유 같은 완충 요소가 있으면 큰 피해, 정제 탄수만 많으면 몬스터가 회복해요. (승리 ${S.gw}회, 명예 점수 +3씩)</div><button class='btn' style='margin-top:8px' onclick='gStart()'>도전!</button></div>`;
+const win=G.hp<=0,over=win||G.t>=4;
+return `<div class='card'><div class='mon'>${win?'💥':'😴'}</div><div class='bar'><i style='width:${Math.max(0,G.hp)}%;background:var(--r)'></i></div><div class='sub'>몬스터 HP ${Math.max(0,G.hp)} · 턴 ${G.t}/4</div><div class='sub'>${G.log}</div>${over?`<h2>${win?'🎉 승리! 명예 점수 +3':'😵 졸음에 졌어요…'}</h2><button class='btn' onclick='gStart()'>다시</button>`:`<div style='margin-top:8px'>${G.hand.map((f,i)=>`<button class='chip' style='font-size:1.1rem' onclick='gPick(${i})'>${f[0]}</button>`).join('')}</div>`}</div>`}
+function lab(){return `<h1>🧪 식품 랩</h1>${gameCard()}<h2 style='margin-top:14px'>📖 과학 카드</h2>${SC.map(s=>`<details class='card'><summary><b>${s[0]} ${s[1]}</b></summary><div class='sub' style='margin-top:6px'>${s[2]}</div></details>`).join('')}`}
+function sosGo(i){const keys=Object.keys(SOS);if(!keys[i])return;SS={sym:keys[i],st:0,p0:5,p1:5,chk:[],done:[],t0:0,bd:0};render();window.scrollTo({top:0,behavior:'smooth'})}
+function sosTog(i){if(!SS||SS.st!==0)return;const k=SS.chk.indexOf(i);k<0?SS.chk.push(i):SS.chk.splice(k,1);render()}
+function sosStep(n){if(!SS)return;SS.st=n;render();window.scrollTo({top:0,behavior:'smooth'})}
+function sp(k,v){if(!SS)return;SS['p'+k]=Math.max(0,Math.min(10,Number(v)||0));const el=document.getElementById('pl'+k);if(el)el.textContent=SS['p'+k];}
+function togM(k){if(!SS||SS.st!==2)return;const i=SS.done.indexOf(k);i<0?SS.done.push(k):SS.done.splice(i,1);render()}
+function sosT(){if(!SS||SS.st!==2||SS.t0)return;SS.t0=now();SS.bd=0;render()}
+setInterval(()=>{const e=document.getElementById('sc');if(e&&SS&&SS.t0){const r=Math.max(0,18e4-(now()-SS.t0));e.textContent=cl(r);if(r===0&&!SS.bd){SS.bd=1;beep();if(!SS.done.includes('b'))togM('b')}}},500);
+function sos(){
+if(!SS)return `<h1>🆘 컨디션 체크</h1><div class='card hero'><h2>지금 몸 상태를 확인해요</h2><div class='sub'>불편한 증상을 고르면 위험 신호 확인부터 차근차근 진행합니다. 이 기능은 진단이 아니에요.</div></div><div class='card'><h2>어디가 불편해요?</h2><div class='sub' style='margin-bottom:8px'>가장 가까운 증상을 선택해 주세요.</div>${Object.keys(SOS).map((k,i)=>`<button class='chip' style='font-size:1rem;padding:12px 16px' onclick='sosGo(${i})'>${k}</button>`).join('')}</div><div class='warn'>심한 복통, 호흡 곤란, 의식 변화, 피가 섞인 구토·변, 계속되는 구토나 탈수 증상이 있으면 체크를 계속하지 말고 즉시 보호자·보건실에 알리세요. 응급 상황은 119입니다.</div>`;
+const d=SOS[SS.sym],st=SS.st,top=`<div class='card hero'><div class='sub'>컨디션 체크 · ${SS.sym}</div><h2 style='margin-top:4px'>${st===0?'1. 위험 신호 확인':st===1?'2. 현재 불편함 기록':st===2?'3. 편안해지는 방법':'체크 결과'}</h2><div class='bar'><i style='width:${st===0?25:st===1?50:st===2?75:100}%;background:#fff'></i></div></div>`;
+if(st===9)return `<h1>🆘 도움 요청</h1><div class='card sosbg'><h2>지금은 혼자 판단하지 마세요.</h2><div>체크한 항목은 위험 신호일 수 있어요. 보호자, 선생님 또는 보건실에 바로 알리세요. 증상이 심하거나 응급이라고 느껴지면 119에 연락하세요.</div></div><button class='btn' onclick='SS=null;render()'>처음으로 돌아가기</button>`;
+if(st===0){const R=['38도 이상의 열','피가 섞인 변이나 구토','계속 토함','참기 힘든 극심한 복통','배가 단단하거나 누르면 심하게 아픔'];return `<h1>🆘 컨디션 체크</h1>${top}<div class='card'><h2>아래 증상이 하나라도 있나요?</h2><div class='sub'>해당하는 항목을 눌러 선택하세요. 하나라도 선택하면 즉시 도움을 요청하도록 안내합니다.</div>${R.map((r,i)=>`<button class='li' style='width:100%;text-align:left;background:transparent;border:0;color:var(--tx);padding:12px 2px' onclick='sosTog(${i})'><span>${SS.chk.includes(i)?'☑':'☐'} ${r}</span><span>${SS.chk.includes(i)?'선택됨':''}</span></button>`).join('')}<div class='row' style='margin-top:12px'><button class='chip' onclick='SS=null;render()'>취소</button><button class='btn' onclick='sosStep(SS.chk.length?9:1)'>확인하고 계속</button></div></div>`}
+if(st===1)return `<h1>🆘 컨디션 체크</h1>${top}<div class='card'><h2>불편함의 정도는 어느 정도인가요?</h2><div class='big' id='pl0' style='text-align:center'>${SS.p0}/10</div><input aria-label='현재 불편함 정도 0부터 10' type='range' min='0' max='10' value='${SS.p0}' oninput='sp(0,this.value)'><div class='between sub'><span>0 · 거의 없음</span><span>10 · 매우 심함</span></div><div class='row' style='margin-top:12px'><button class='chip' onclick='sosStep(0)'>이전</button><button class='btn' onclick='sosStep(2)'>다음 단계</button></div></div>`;
+if(st===2){const ok=SS.done.length>=d.eat.length+1,remaining=Math.max(0,180000-(now()-SS.t0));return `<h1>🆘 컨디션 체크</h1>${top}<div class='card'><h2>지금 해볼 수 있는 방법</h2><div class='sub'>불편함이 심해지면 미션을 중단하고 보호자나 의료진에게 도움을 요청하세요.</div>${d.eat.map((x,i)=>`<button class='li' style='width:100%;text-align:left;background:transparent;border:0;color:var(--tx);padding:12px 2px' onclick='togM(${i})'><span>${SS.done.includes(i)?'✅':'⬜'} ${x}</span><span>${SS.done.includes(i)?'완료':''}</span></button>`).join('')}<div class='li' style='display:block;padding:12px 2px'><div class='between'><b>🫁 천천히 호흡하기</b><span class='sub'>${SS.bd?'완료':SS.t0?cl(remaining):'3분'}</span></div><div class='sub'>편안한 자세로 숨을 천천히 들이쉬고 내쉬세요. 어지럽거나 불편해지면 중단해요.</div><button class='chip' style='margin-top:8px' onclick='sosT()' ${SS.t0?'disabled':''}>${SS.t0?(SS.bd?'호흡 완료':'타이머 진행 중…'):'3분 타이머 시작'}</button></div><div class='sub' style='margin-top:8px'>피하면 좋은 것: ${d.avoid.join(', ')}</div><div class='sub' style='margin-top:6px'>참고: ${d.why}</div><button class='btn' style='width:100%;margin-top:14px' ${ok?'':'disabled'} onclick='sosStep(3)'>완료하고 결과 확인</button><div class='sub' style='margin-top:8px'>${SS.done.length}/${d.eat.length+1}개 항목 완료</div></div>`}
+return `<h1>🆘 체크 결과</h1>${top}<div class='card'><h2>현재 불편함 정도를 다시 기록해요</h2><div class='big' id='pl1' style='text-align:center'>${SS.p1}/10</div><input aria-label='미션 후 불편함 정도 0부터 10' type='range' min='0' max='10' value='${SS.p1}' oninput='sp(1,this.value);sosR()'><div class='between sub'><span>0 · 거의 없음</span><span>10 · 매우 심함</span></div><div id='sr' style='margin-top:10px'></div><div class='row' style='margin-top:12px'><button class='chip' onclick='sosStep(2)'>이전</button><button class='btn' onclick='SS=null;render()'>체크 종료</button></div></div>`}
+
+function sosR(){if(!SS)return;const el=document.getElementById('sr');if(!el)return;const dl=SS.p0-SS.p1,bad=SS.p1>=7||SS.p1>=SS.p0;el.innerHTML=bad?`<div class='warn'>불편함이 줄지 않았거나 여전히 심해요. 미션을 반복하기보다 보호자·보건실·의료진에게 알려 주세요.</div>`:`<div class='notice'>처음보다 ${dl}점 줄었다고 기록했어요. 증상이 다시 심해지면 도움을 요청하세요.</div>`}
+boot();
+</script>
+</body>
+</html>

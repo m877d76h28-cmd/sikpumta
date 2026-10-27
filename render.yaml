@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: sikpumta
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --bind 0.0.0.0:$PORT --timeout 120
+    healthCheckPath: /healthz
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: DATABASE_PATH
+        value: /var/data/sikpumta.sqlite3
+    disk:
+      name: sikpumta-data
+      mountPath: /var/data
+      sizeGB: 1

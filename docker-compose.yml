@@ -1,0 +1,16 @@
+services:
+  sikpumta:
+    build: .
+    container_name: sikpumta
+    ports:
+      - "5000:5000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      COOKIE_SECURE: "0"
+      DATABASE_PATH: /var/data/sikpumta.sqlite3
+      PORT: "5000"
+    volumes:
+      - sikpumta_data:/var/data
+    restart: unless-stopped
+volumes:
+  sikpumta_data:
