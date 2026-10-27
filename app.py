@@ -179,7 +179,120 @@ def state():
                       updated_at = CURRENT_TIMESTAMP''', (uid, serialized))
     return jsonify({'ok': True})
 
+@app.get('/api/leaderboard')
+def leaderboard():
+    from datetime import datetime, timedelta
+    from zoneinfo import ZoneInfo
 
+    KST = ZoneInfo('Asia/Seoul')
+    now = datetime.now(KST)
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    result = []
+
+    with connect_db() as db:
+        rows = db.execute('''
+            SELECT users.id, user_state.state_json
+            FROM users
+            LEFT JOIN user_state ON users.id = user_state.user_id
+        ''').fetchall()
+
+        for row in rows:
+            try:
+                data = json.loads(row['state_json'] or '{}')
+            except (json.JSONDecodeError, TypeError):
+                continue
+
+            profile = data.get('profile') or {}
+            name = str(profile.get('name') or '사용자')
+            logs = data.get('logs') or []
+            meals = data.get('meals') or []
+            focus = data.get('focus') or []
+            study = data.get('study') or []
+
+            bed = str(data.get('bed') or '23:30')
+            try:
+                hh, mm = map(int, bed.split(':'))
+                bed_min = hh * 60 + mm
+            except (ValueError, TypeError):
+                bed_min = 23 * 60 + 30
+
+            if bed_min < 720:
+                bed_min += 1440
+
+            try:
+                hl = float(data.get('hl') or 5.5)
+            except (ValueError, TypeError):
+                hl = 5.5
+
+            cutoff = bed_min - hl * 60 * 6 / 5.5
+
+            try:
+                age = float(profile.get('age') or 0)
+                weight = float(profile.get('weight') or data.get('kg') or 60)
+            except (ValueError, TypeError):
+                age, weight = 0, 60
+
+            limit = 400 if age >= 19 else min(150, round(weight * 2.5))
+            if profile.get('pregnant') == 'yes':
+                limit = 300
+
+            health = 0
+            minutes = 0
+
+            for i in range(7):
+                start = today - timedelta(days=i)
+                end = start + timedelta(days=1)
+                start_ms = start.timestamp() * 1000
+                end_ms = end.timestamp() * 1000
+
+                day_logs = [
+                    x for x in logs
+                    if start_ms <= (x.get('t') or 0) < end_ms
+                ]
+                day_meals = [
+                    x for x in meals
+                    if start_ms <= (x.get('t') or 0) < end_ms
+                ]
+                day_study = [
+                    x for x in study
+                    if start_ms <= (x.get('t') or 0) < end_ms
+                ]
+                day_focus = [
+                    x for x in focus
+                    if start_ms <= (x.get('t') or 0) < end_ms
+                ]
+
+                if not (day_logs or day_meals or day_study or day_focus):
+                    continue
+
+                late = any(
+                    ((x.get('t') or 0) - start_ms) / 60000 > cutoff
+                    for x in day_logs
+                )
+                caffeine = sum(
+                    float(x.get('mg') or 0) for x in day_logs
+                )
+
+                health += 0 if late else 10
+                health += 0 if caffeine > limit else 5
+                health += 5 if day_meals else 0
+                minutes += sum(
+                    max(0, float(x.get('m') or 0))
+                    for x in day_study
+                )
+
+            health += min(30, max(0, float(data.get('gw') or 0) * 3))
+            study_score = min(120, round(minutes / 5))
+            result.append({
+                'name': name[:40],
+                'health': round(health),
+                'study': study_score,
+                'score': round(health) + study_score,
+                'is_me': row['id'] == session.get('user_id')
+            })
+
+    result.sort(key=lambda x: x['score'], reverse=True)
+    return jsonify({'rankings': result})
 @app.after_request
 def security_headers(response):
     response.headers.setdefault('X-Content-Type-Options', 'nosniff')
